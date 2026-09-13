@@ -55,6 +55,9 @@ jobs:
           echo "sdkmanager version:"
           sdkmanager --version
 
+          # ------------------------------------
+          # Accept licenses
+          # ------------------------------------
           echo ""
           echo "========================================"
           echo "Accepting Android SDK licenses"
@@ -62,6 +65,9 @@ jobs:
 
           yes | sdkmanager --licenses >/dev/null 2>&1 || true
 
+          # ------------------------------------
+          # Show available Android 37 packages
+          # ------------------------------------
           echo ""
           echo "========================================"
           echo "Available Android 37 Packages"
@@ -70,6 +76,14 @@ jobs:
           sdkmanager --list | grep -E \
             'platforms;android-37|build-tools;37' || true
 
+          # ------------------------------------
+          # Install Android API 37
+          #
+          # IMPORTANT:
+          # sdkmanager package name is android-37.0
+          # but the SDK directory used by Gradle
+          # is platforms/android-37
+          # ------------------------------------
           echo ""
           echo "========================================"
           echo "Installing Android SDK Platform 37"
@@ -77,6 +91,9 @@ jobs:
 
           sdkmanager --install "platforms;android-37.0"
 
+          # ------------------------------------
+          # Platform Tools
+          # ------------------------------------
           echo ""
           echo "========================================"
           echo "Installing Android Platform Tools"
@@ -84,52 +101,60 @@ jobs:
 
           sdkmanager --install "platform-tools"
 
+          # ------------------------------------
+          # Build Tools
+          # ------------------------------------
           echo ""
           echo "========================================"
-          echo "Finding Android 37 Build Tools"
+          echo "Installing Android 37 Build Tools"
           echo "========================================"
 
-          BUILD_TOOLS=$(
-            sdkmanager --list \
-              | grep -oE 'build-tools;37\.[0-9.]+' \
-              | sort -V \
-              | tail -1
-          )
+          sdkmanager --install "build-tools;37.0.0"
 
-          if [ -z "$BUILD_TOOLS" ]; then
-            echo "ERROR: Android 37 Build Tools were not found."
-            echo ""
-            echo "Available Build Tools:"
-            sdkmanager --list | grep "build-tools;" || true
-            exit 1
-          fi
-
-          echo "Selected Build Tools:"
-          echo "$BUILD_TOOLS"
-
-          echo ""
-          echo "========================================"
-          echo "Installing $BUILD_TOOLS"
-          echo "========================================"
-
-          sdkmanager --install "$BUILD_TOOLS"
-
+          # ------------------------------------
+          # Verify SDK
+          # ------------------------------------
           echo ""
           echo "========================================"
           echo "Verifying Android SDK"
           echo "========================================"
 
-          test -d "$ANDROID_SDK_ROOT/platforms/android-37.0"
-          test -d "$ANDROID_SDK_ROOT/platform-tools"
-          test -d "$ANDROID_SDK_ROOT/$BUILD_TOOLS"
+          echo "Checking Android SDK Platform..."
+          if [ ! -d "$ANDROID_SDK_ROOT/platforms/android-37" ]; then
+            echo "ERROR: Android API 37 platform was not installed."
+            echo ""
+            echo "Installed platforms:"
+            ls -la "$ANDROID_SDK_ROOT/platforms/" || true
+            exit 1
+          fi
+
+          echo "Android SDK Platform 37: OK"
 
           echo ""
-          echo "Android SDK Platform 37.0: OK"
+          echo "Checking Platform Tools..."
+          if [ ! -d "$ANDROID_SDK_ROOT/platform-tools" ]; then
+            echo "ERROR: Platform Tools were not installed."
+            exit 1
+          fi
+
           echo "Android Platform Tools: OK"
-          echo "Android Build Tools: $BUILD_TOOLS"
 
           echo ""
-          echo "Android SDK setup completed successfully."
+          echo "Checking Build Tools..."
+          if [ ! -d "$ANDROID_SDK_ROOT/build-tools/37.0.0" ]; then
+            echo "ERROR: Build Tools 37.0.0 were not installed."
+            echo ""
+            echo "Installed Build Tools:"
+            ls -la "$ANDROID_SDK_ROOT/build-tools/" || true
+            exit 1
+          fi
+
+          echo "Android Build Tools 37.0.0: OK"
+
+          echo ""
+          echo "========================================"
+          echo "Android SDK setup completed successfully"
+          echo "========================================"
 
       # ========================================
       # Gradle
@@ -144,7 +169,10 @@ jobs:
       # ========================================
       - name: Verify Java version
         run: |
-          echo "Java version:"
+          echo "========================================"
+          echo "Java Version"
+          echo "========================================"
+
           java -version
 
       # ========================================
@@ -152,7 +180,10 @@ jobs:
       # ========================================
       - name: Verify Gradle version
         run: |
-          echo "Gradle version:"
+          echo "========================================"
+          echo "Gradle Version"
+          echo "========================================"
+
           ./gradlew --version
 
       # ========================================
@@ -164,17 +195,16 @@ jobs:
           set -e
 
           echo "========================================"
-          echo "Checking Android SDK Platform 37"
+          echo "Checking Android Project"
           echo "========================================"
 
-          test -d "$ANDROID_SDK_ROOT/platforms/android-37.0"
+          echo "Checking Android API 37..."
+          test -d "$ANDROID_SDK_ROOT/platforms/android-37"
 
-          echo "Android SDK Platform 37.0: OK"
+          echo "Android API 37: OK"
 
           echo ""
-          echo "========================================"
-          echo "Checking Gradle Wrapper"
-          echo "========================================"
+          echo "Checking Gradle Wrapper..."
 
           test -f "./gradlew"
           test -f "./gradle/wrapper/gradle-wrapper.jar"
@@ -183,7 +213,7 @@ jobs:
           echo "Gradle Wrapper: OK"
 
           echo ""
-          echo "All required files and SDK components are present."
+          echo "Android project configuration verified."
 
       # ========================================
       # Build Debug APK
