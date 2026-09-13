@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.setContent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -1633,62 +1634,45 @@ private fun CodeEditor(
 
         BasicTextField(
             value = code,
-
-            onValueChange = {
+            onValueChange = { newCode: String ->
                 onCodeChange(
                     autoIndent(
                         code,
-                        it,
+                        newCode,
                         language
                     )
                 )
             },
-
-            modifier =
-                Modifier.widthIn(
-                    min = 700.dp
-                ),
-
-            textStyle =
-                androidx.compose.ui.text.TextStyle(
-                    color = Color(0xFFE6EAF2),
-                    fontFamily =
-                        FontFamily.Monospace,
-                    fontSize = 13.sp,
-                    lineHeight = 19.sp
-                ),
-
-            visualTransformation =
-                transformed,
-
+            modifier = Modifier.widthIn(
+                min = 700.dp
+            ),
+            textStyle = androidx.compose.ui.text.TextStyle(
+                color = Color(0xFFE6EAF2),
+                fontFamily = FontFamily.Monospace,
+                fontSize = 13.sp,
+                lineHeight = 19.sp
+            ),
+            visualTransformation = transformed,
             singleLine = false,
-
-            softWrap = false,
-
-            cursorBrush =
-                androidx.compose.ui.graphics
-                    .SolidColor(
-                        Color.White
-                    ),
-
-            decorationBox = { inner ->
-
+            cursorBrush = androidx.compose.ui.graphics.SolidColor(
+                Color.White
+            ),
+            decorationBox = { innerTextField ->
                 if (code.isEmpty()) {
-
                     Text(
                         "Write your ${language.uppercase(Locale.getDefault())} code here...",
                         color = Color(0xFF98A2B3),
-                        fontFamily =
-                            FontFamily.Monospace,
+                        fontFamily = FontFamily.Monospace,
                         fontSize = 13.sp
                     )
                 }
-
-                inner()
+        
+                innerTextField()
             }
         )
     }
 }
+
 
 @Composable
 private fun CodeViewer(
