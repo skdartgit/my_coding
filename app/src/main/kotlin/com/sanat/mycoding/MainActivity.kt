@@ -1718,6 +1718,9 @@ private fun CodeViewer(
                 fontFamily =
                     FontFamily.Monospace,
 
+                color =
+                    Color(0xFFE6EAF2),
+
                 fontSize = 12.sp,
 
                 lineHeight = 18.sp
@@ -1787,6 +1790,14 @@ private object SyntaxHighlighter {
 
         if (code.isEmpty())
             return builder.toAnnotatedString()
+
+        builder.addStyle(
+            SpanStyle(
+                color = Color(0xFFE6EAF2)
+            ),
+            0,
+            code.length
+        )
 
         val kw =
             keywordMap[
