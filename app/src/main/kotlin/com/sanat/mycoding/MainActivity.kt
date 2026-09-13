@@ -42,7 +42,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.consume
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.platform.LocalContext
@@ -929,7 +928,7 @@ private fun MyCodingPage(
                                                 change,
                                                 amount ->
 
-                                            change.consume()
+                                            change.consumePositionChange()
 
                                             dragOffset +=
                                                 amount.y
