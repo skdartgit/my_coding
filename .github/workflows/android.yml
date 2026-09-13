@@ -37,7 +37,7 @@ jobs:
           packages: ''
 
       # ========================================
-      # Prepare Android SDK
+      # Android SDK Components
       # ========================================
       - name: Prepare Android SDK
         shell: bash
@@ -77,22 +77,17 @@ jobs:
             'platforms;android-37|build-tools;37' || true
 
           # ------------------------------------
-          # Install Android API 37
-          #
-          # IMPORTANT:
-          # sdkmanager package name is android-37.0
-          # but the SDK directory used by Gradle
-          # is platforms/android-37
+          # Install Android API 37 platform
           # ------------------------------------
           echo ""
           echo "========================================"
-          echo "Installing Android SDK Platform 37"
+          echo "Installing Android SDK Platform 37.0"
           echo "========================================"
 
           sdkmanager --install "platforms;android-37.0"
 
           # ------------------------------------
-          # Platform Tools
+          # Install Platform Tools
           # ------------------------------------
           echo ""
           echo "========================================"
@@ -102,36 +97,38 @@ jobs:
           sdkmanager --install "platform-tools"
 
           # ------------------------------------
-          # Build Tools
+          # Install Build Tools
           # ------------------------------------
           echo ""
           echo "========================================"
-          echo "Installing Android 37 Build Tools"
+          echo "Installing Android Build Tools 37.0.0"
           echo "========================================"
 
           sdkmanager --install "build-tools;37.0.0"
 
           # ------------------------------------
-          # Verify SDK
+          # Verify installation
           # ------------------------------------
           echo ""
           echo "========================================"
           echo "Verifying Android SDK"
           echo "========================================"
 
-          echo "Checking Android SDK Platform..."
-          if [ ! -d "$ANDROID_SDK_ROOT/platforms/android-37" ]; then
-            echo "ERROR: Android API 37 platform was not installed."
+          echo "Checking Android SDK Platform 37.0..."
+
+          if [ ! -d "$ANDROID_SDK_ROOT/platforms/android-37.0" ]; then
+            echo "ERROR: Android SDK Platform 37.0 was not installed."
             echo ""
             echo "Installed platforms:"
             ls -la "$ANDROID_SDK_ROOT/platforms/" || true
             exit 1
           fi
 
-          echo "Android SDK Platform 37: OK"
+          echo "Android SDK Platform 37.0: OK"
 
           echo ""
           echo "Checking Platform Tools..."
+
           if [ ! -d "$ANDROID_SDK_ROOT/platform-tools" ]; then
             echo "ERROR: Platform Tools were not installed."
             exit 1
@@ -140,7 +137,8 @@ jobs:
           echo "Android Platform Tools: OK"
 
           echo ""
-          echo "Checking Build Tools..."
+          echo "Checking Build Tools 37.0.0..."
+
           if [ ! -d "$ANDROID_SDK_ROOT/build-tools/37.0.0" ]; then
             echo "ERROR: Build Tools 37.0.0 were not installed."
             echo ""
@@ -187,7 +185,7 @@ jobs:
           ./gradlew --version
 
       # ========================================
-      # Verify Android project
+      # Verify Android Project
       # ========================================
       - name: Verify Android project configuration
         shell: bash
@@ -198,10 +196,10 @@ jobs:
           echo "Checking Android Project"
           echo "========================================"
 
-          echo "Checking Android API 37..."
-          test -d "$ANDROID_SDK_ROOT/platforms/android-37"
+          echo "Checking Android SDK Platform 37.0..."
+          test -d "$ANDROID_SDK_ROOT/platforms/android-37.0"
 
-          echo "Android API 37: OK"
+          echo "Android SDK Platform 37.0: OK"
 
           echo ""
           echo "Checking Gradle Wrapper..."
@@ -231,7 +229,7 @@ jobs:
             :app:assembleDebug
 
       # ========================================
-      # Upload APK
+      # Upload Debug APK
       # ========================================
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
