@@ -925,10 +925,9 @@ private fun MyCodingPage(
                                         },
 
                                         onDrag = {
-                                                change,
+                                                _,
                                                 amount ->
 
-                                            change.consumePositionChange()
 
                                             dragOffset +=
                                                 amount.y
